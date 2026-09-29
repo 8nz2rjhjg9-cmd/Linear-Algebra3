@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Lernzettel Analytische Geometrie</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+  --paper:#fdfdff; --grid:#dbe6f6; --ink:#1d3a9e; --ink-soft:#e8eefc;
+  --red:#c2255c; --hl:#fff1a8; --hl-text:#3d3200; --ok:#237a3b; --ok-soft:#e3f5e8;
+  --text:#1f2430; --muted:#5a6275; --line:#c9d3e8; --card:#ffffff;
+  --sans:"Source Sans 3",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --hand:"Caveat","Bradley Hand","Segoe Print",cursive;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#141a2b; --grid:#1f2942; --ink:#8fa8ff; --ink-soft:#1e2a52;
+    --red:#ff7aa8; --hl:#5a4a00; --hl-text:#fff3b8; --ok:#63d48a; --ok-soft:#173a26;
+    --text:#e6e9f2; --muted:#a3abc0; --line:#334066; --card:#192038;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#141a2b; --grid:#1f2942; --ink:#8fa8ff; --ink-soft:#1e2a52;
+  --red:#ff7aa8; --hl:#5a4a00; --hl-text:#fff3b8; --ok:#63d48a; --ok-soft:#173a26;
+  --text:#e6e9f2; --muted:#a3abc0; --line:#334066; --card:#192038;
+}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + 64px);scroll-behavior:smooth}
+body{
+  margin:0;font-family:var(--sans);font-size:17px;line-height:1.55;color:var(--text);
+  background-color:var(--paper);
+  background-image:
+    linear-gradient(var(--grid) 1px,transparent 1px),
+    linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+  background-size:24px 24px;
+}
+.wrap{max-width:860px;margin:0 auto;padding:20px 16px 80px}
+
+/* Kopf */
+.hero{padding:28px 0 8px}
+.hero h1{font-family:var(--hand);font-weight:700;font-size:clamp(40px,8vw,64px);line-height:1;margin:0;color:var(--ink)}
+.hero h1 span{display:inline-block;background:linear-gradient(transparent 58%,var(--hl) 58%);padding:0 6px}
+.hero p{margin:12px 0 0;color:var(--muted);max-width:60ch}
+.progress{margin-top:18px;background:var(--card);border:1.5px solid var(--line);border-radius:10px;padding:12px 14px;display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+.bar{flex:1;min-width:160px;height:12px;background:var(--ink-soft);border-radius:99px;overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:var(--ok);transition:width .3s}
+.progress b{font-variant-numeric:tabular-nums}
+
+/* Nav */
+nav.chips{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;margin:16px -16px 0;padding:10px 16px;
+  background:color-mix(in srgb,var(--paper) 92%,transparent);backdrop-filter:blur(6px);
+  display:flex;gap:8px;overflow-x:auto;border-bottom:1.5px solid var(--line)}
+nav.chips a{flex:none;text-decoration:none;color:var(--ink);border:1.5px solid var(--ink);border-radius:99px;padding:4px 12px;font-size:15px;font-weight:600;background:var(--card)}
+nav.chips a.done{background:var(--ok-soft);border-color:var(--ok);color:var(--ok)}
+nav.chips a:focus-visible,button:focus-visible,summary:focus-visible{outline:3px solid var(--red);outline-offset:2px}
+
+/* Karten */
+.card{position:relative;background:var(--card);border:1.5px solid var(--line);border-radius:14px;margin:26px 0;padding:20px 20px 20px 34px;overflow:hidden}
+.card::before{content:"";position:absolute;left:18px;top:0;bottom:0;width:2px;background:var(--red);opacity:.55}
+.card header{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;margin-bottom:6px}
+.card h2{font-family:var(--hand);font-weight:700;font-size:34px;line-height:1.05;margin:0;color:var(--ink)}
+.card h3{font-size:17px;margin:20px 0 6px;color:var(--ink)}
+.kann{cursor:pointer;font:inherit;font-weight:600;font-size:14px;border:1.5px solid var(--line);background:var(--paper);color:var(--muted);border-radius:99px;padding:5px 12px}
+.kann[aria-pressed="true"]{background:var(--ok-soft);border-color:var(--ok);color:var(--ok)}
+.sub{color:var(--muted);margin:0 0 10px}
+
+.merke{background:var(--hl);color:var(--hl-text);border-radius:8px;padding:10px 14px;margin:12px 0;font-weight:600}
+.merke small{display:block;font-weight:400;opacity:.85}
+.merke .f{display:block;margin:2px 0}
+
+ol.rezept{list-style:none;counter-reset:s;margin:10px 0;padding:0}
+ol.rezept li{counter-increment:s;position:relative;padding:6px 0 6px 40px;min-height:34px}
+ol.rezept li::before{content:counter(s);position:absolute;left:0;top:5px;width:28px;height:28px;border-radius:50%;background:var(--ink);color:var(--paper);display:grid;place-items:center;font-weight:700;font-size:15px}
+
+.bsp{background:var(--ink-soft);border-left:4px solid var(--ink);border-radius:0 8px 8px 0;padding:10px 14px;margin:12px 0}
+.bsp .tag{display:inline-block;font-weight:700;font-size:14px;color:var(--ink);margin-bottom:2px}
+.bsp p{margin:4px 0}
+.ok{color:var(--ok);font-weight:700}
+.no{color:var(--red);font-weight:700}
+
+.vec{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;padding:0 .35em;margin:0 .12em;
+  border-left:2px solid currentColor;border-right:2px solid currentColor;border-radius:7px;font-size:.86em;line-height:1.2}
+.vec i{font-style:normal}
+
+figure{margin:14px 0 6px;text-align:center}
+figure svg{max-width:100%;height:auto;background:var(--paper);border:1.5px dashed var(--line);border-radius:10px}
+figcaption{font-size:14px;color:var(--muted);margin-top:4px}
+svg .ln{stroke:var(--ink);stroke-width:2.2;fill:none;stroke-linecap:round}
+svg .thin{stroke:var(--muted);stroke-width:1.3;fill:none;stroke-dasharray:4 4}
+svg .rd{stroke:var(--red);stroke-width:2.4;fill:none;stroke-linecap:round}
+svg .fillsoft{fill:var(--ink-soft);stroke:var(--ink);stroke-width:2}
+svg .pt{fill:var(--ink)}
+svg .ptr{fill:var(--red)}
+svg text{font-family:var(--sans);font-size:14px;fill:var(--text)}
+svg text.b{font-weight:700}
+svg text.r{fill:var(--red);font-weight:700}
+svg text.i{fill:var(--ink);font-weight:700}
+svg .mk-b{fill:var(--ink)} svg .mk-r{fill:var(--red)}
+
+table{border-collapse:collapse;width:100%;font-size:16px;margin:8px 0}
+th,td{border:1.5px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+th{background:var(--ink-soft);color:var(--ink)}
+.tablewrap{overflow-x:auto}
+
+.flow{display:grid;gap:8px;margin:12px 0}
+.flow .box{border:2px solid var(--ink);border-radius:10px;padding:8px 12px;background:var(--paper)}
+.flow .yn{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.flow .yes{border-color:var(--ok)} .flow .nope{border-color:var(--red)}
+.flow .arrow{text-align:center;color:var(--muted);font-weight:700;line-height:1}
+@media (max-width:520px){.flow .yn{grid-template-columns:1fr}}
+
+details{border:1.5px solid var(--line);border-radius:10px;padding:8px 12px;margin:10px 0;background:var(--paper)}
+summary{cursor:pointer;font-weight:600;color:var(--ink)}
+.plan{display:grid;gap:8px;margin-top:8px}
+.plan label{display:flex;gap:10px;align-items:flex-start;cursor:pointer}
+.plan input{margin-top:5px;width:18px;height:18px;accent-color:var(--ok)}
+.themebtn{position:fixed;right:12px;bottom:calc(12px + env(safe-area-inset-bottom,0px));z-index:6;border:1.5px solid var(--line);background:var(--card);color:var(--text);border-radius:99px;padding:8px 14px;font:inherit;font-size:14px;cursor:pointer}
+
+@media print{
+  body{background:#fff;background-image:none;color:#000;font-size:11pt}
+  nav.chips,.themebtn,.progress,.kann{display:none}
+  .card{break-inside:avoid;border-color:#999}
+  details{display:block} details>*{display:block}
+}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}.bar i{transition:none}}
+
+.mat{display:inline-flex;flex-direction:column;vertical-align:middle;margin:4px 8px;padding:2px 6px;border-left:2px solid currentColor;border-right:2px solid currentColor;border-radius:7px;font-variant-numeric:tabular-nums;position:relative}
+.mat:has(.op:not(:empty)){margin-right:7.5em}
+.mat .r{display:flex;position:relative}
+.mat i{font-style:normal;min-width:2.2em;text-align:right;padding:0 .2em}
+.mat i.sep{border-left:1.5px solid var(--muted);margin-left:.4em}
+.mat em.op{font-style:normal;position:absolute;left:100%;margin-left:1.1em;white-space:nowrap;color:var(--red);font-size:.85em;line-height:1.7}
+</style>
+</head>
+<body>
+
+<!-- Pfeilspitzen -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <marker id="ab" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="mk-b"/></marker>
+    <marker id="ar" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="mk-r"/></marker>
+  </defs>
+</svg>
+
+<div class="wrap">
+
+<div class="hero">
+  <h1>Analytische <span>Geometrie</span></h1>
+  <p>Dein Lernzettel, gebaut aus den Aufgaben deines Dokuments (Abi 2022 bis 2025). Jede Karte hat: die Formel zum Merken, ein Rezept in Schritten, eine Skizze und ein echtes Beispiel aus deinen Klausuren mit Lösung.</p>
+  <div class="progress" aria-live="polite">
+    <span><b id="pcount">0</b> von <b id="ptotal">0</b> Karten sicher</span>
+    <div class="bar"><i id="pbar"></i></div>
+  </div>
+</div>
+
+<nav class="chips" id="nav" aria-label="Themen"></nav>
+
+<!-- ============ Wegweiser ============ -->
+<section class="card" id="wegweiser">
+  <header><h2>Wegweiser: Was steht da, was mache ich?</h2></header>
+  <p class="sub">Lies zuerst das Signalwort in der Aufgabe. Dann weißt du sofort, welche Karte du brauchst.</p>
+  <div class="tablewrap">
+  <table>
+    <tr><th>Steht in der Aufgabe</th><th>Du machst</th><th>Karte</th></tr>
+    <tr><td>„liegt nicht auf g“, „liegt P auf g?“</td><td>Punkt einsetzen, drei Zeilen prüfen</td><td>Punktprobe</td></tr>
+    <tr><td>„senkrecht“, „orthogonal“, „rechter Winkel“</td><td>Skalarprodukt = 0</td><td>Skalarprodukt</td></tr>
+    <tr><td>„Innenwinkel“, „Winkel zwischen“</td><td>cos-Formel, dann cos⁻¹</td><td>Skalarprodukt</td></tr>
+    <tr><td>„schneiden sich“, „gemeinsamer Punkt“</td><td>Geraden gleichsetzen</td><td>Lage von Geraden</td></tr>
+    <tr><td>„Abstand 9 von A“ (Punkt auf Gerade)</td><td>A ± (9 : Länge) · Richtung</td><td>Punkte auf Geraden</td></tr>
+    <tr><td>„gleichschenklig“, „Fläche des Dreiecks“</td><td>Zwei Seiten gleich lang, Höhe, ½·g·h</td><td>Dreiecke und Vierecke</td></tr>
+    <tr><td>„zu einem Rechteck ergänzen“</td><td>D = A + BC</td><td>Dreiecke und Vierecke</td></tr>
+    <tr><td>„Prisma“, „Quader“, „Volumen“, „Oberfläche“</td><td>Grundfläche · Höhe, alle Flächen addieren</td><td>Körper</td></tr>
+    <tr><td>„Gleichung der Ebene in Parameterform“</td><td>Stützpunkt + r·Vektor + s·Vektor</td><td>Ebenen</td></tr>
+    <tr><td>„senkrecht zur Ebene“, „spiegeln an der Ebene“</td><td>Normalenvektor prüfen, Abstand verdoppeln</td><td>Ebenen</td></tr>
+    <tr><td>„Schatten“, „Sonnenstrahlen“</td><td>Gerade in Strahlrichtung mit Ebene schneiden</td><td>Schatten</td></tr>
+    <tr><td>„kleinster Flächeninhalt“, „kürzester Abstand“</td><td>Lot: Skalarprodukt = 0</td><td>Lot</td></tr>
+      <tr><td>„Lösen Sie das Gleichungssystem“, „Lösungsmenge“</td><td>Stufenform (Gauß), von unten auflösen</td><td>LGS und Gauß</td></tr>
+    <tr><td>„keine Lösung“, „unendlich viele Lösungen“</td><td>Letzte Zeile ansehen: 0 = c oder 0 = 0</td><td>LGS und Gauß</td></tr>
+    <tr><td>„linear abhängig“, „Normalenvektor bestimmen“</td><td>Vielfaches prüfen, Kreuzprodukt</td><td>Kreuzprodukt und Koordinatenform</td></tr>
+    <tr><td>„Koordinatenform“, „Abstand Punkt–Ebene“, „Gerade und Ebene schneiden“</td><td>n∘x = d, Gerade einsetzen</td><td>Kreuzprodukt und Koordinatenform</td></tr>
+  </table>
+  </div>
+</section>
+
+<!-- ============ 1 Grundwerkzeuge ============ -->
+<section class="card" id="grund" data-title="Grundwerkzeuge">
+  <header><h2>Grundwerkzeuge</h2><button class="kann" aria-pressed="false">Kann ich</button></header>
+  <p class="sub">Diese fünf Formeln brauchst du in fast jeder Aufgabe.</p>
+  <div class="merke">
+    <span class="f">Verbindungsvektor: AB = B − A (Spitze minus Fuß)</span>
+    <span class="f">Länge: |a| = √(a₁² + a₂² + a₃²)</span>
+    <span class="f">Mittelpunkt: M = ½ · (A + B)</span>
+    <span class="f">Parallel: a = k · b (ein Vektor ist ein Vielfaches des anderen)</span>
+    <span class="f">Skalarprodukt: a∘b = a₁b₁ + a₂b₂ + a₃b₃</span>
+  </div>
+  <figure>
+    <svg viewBox="0 0 340 180" width="340" role="img" aria-label="Verbindungsvektor von A nach B mit Mittelpunkt M">
+      <line class="rd" x1="50" y1="140" x2="285" y2="45" marker-end="url(#ar)"/>
+      <circle class="pt" cx="50" cy="140" r="5"/><circle class="pt" cx="290" cy="43" r="5"/><circle class="ptr" cx="168" cy="92" r="5"/>
+      <text class="i" x="30" y="162">A</text><text class="i" x="296" y="38">B</text><text class="r" x="176" y="112">M</text>
+      <text class="r" x="70" y="90">AB = B − A</text>
+      <text x="40" y="26">M liegt genau in der Mitte: ½(A + B)</text>
+    </svg>
+    <figcaption>Der Pfeil zeigt von A nach B. Immer „Ziel minus Start“ rechnen.</figcaption>
+  </figure>
+  <div class="bsp"><span class="tag">Beispiel (Abi 2025, Wahlpflicht 3)</span>
+    <p>P(3|1|−1) und O(0|0|0): |OP| = √(9 + 1 + 1) = √11</p>
+    <p>Q(4|2|−4): |OQ| = √(16 + 4 + 16) = √36 = 6</p>
+  </div>
+</section>
+
+<!-- ============ LGS und Gauß ============ -->
+<section class="card" id="lgs" data-title="LGS und Gauß">
+  <header><h2>Lineare Gleichungssysteme und Gauß-Verfahren</h2><button class="kann" aria-pressed="false">Kann ich</button></header>
+  <p class="sub">Hinter fast jeder Aufgabe steckt ein LGS: Schnittpunkt zweier Geraden, „liegt der Punkt in der Ebene?“, Parameter wie b oder r bestimmen.</p>
+
+  <div class="merke">
+    Drei erlaubte Umformungen (die Lösung bleibt gleich):
+    <span class="f">1. Zwei Zeilen vertauschen</span>
+    <span class="f">2. Eine Zeile mit einer Zahl ≠ 0 multiplizieren</span>
+    <span class="f">3. Ein Vielfaches einer Zeile zu einer anderen addieren</span>
+    <small>Ziel: Stufenform, also links unten nur Nullen.</small>
+  </div>
+
+  <figure>
+    <svg viewBox="0 0 340 150" width="340" role="img" aria-label="Stufenform einer Matrix mit Nullen links unten">
+      <polyline class="rd" points="50,30 50,58 100,58 100,86 150,86 150,114 200,114" />
+      <text class="b" x="40" y="24">Stufenform</text>
+      <g class="b">
+        <text x="60" y="50">■</text><text x="110" y="50">∗</text><text x="160" y="50">∗</text><text x="215" y="50">∗</text>
+        <text x="60" y="78">0</text><text x="110" y="78">■</text><text x="160" y="78">∗</text><text x="215" y="78">∗</text>
+        <text x="60" y="106">0</text><text x="110" y="106">0</text><text x="160" y="106">■</text><text x="215" y="106">∗</text>
+      </g>
+      <line class="thin" x1="200" y1="32" x2="200" y2="112"/>
+      <text x="240" y="50">■ = Zahl ≠ 0</text>
+      <text x="240" y="78">∗ = egal</text>
+      <text x="240" y="106">unter der Treppe: 0</text>
+    </svg>
+    <figcaption>Unter der roten Treppe stehen nur Nullen. Dann löst du von unten nach oben auf.</figcaption>
+  </figure>
+
+  <h3>Rezept</h3>
+  <ol class="rezept">
+    <li>Gleichungen ordnen: Variablen in Spalten, rechts die Zahlen (erweiterte Koeffizientenmatrix).</li>
+    <li>Erste Spalte: Mit Zeile I alle Einträge darunter zu 0 machen.</li>
+    <li>Zweite Spalte: Mit Zeile II alle Einträge darunter zu 0 machen.</li>
+    <li>Von der untersten Zeile nach oben auflösen (rückwärts einsetzen).</li>
+    <li>Probe in den ursprünglichen Gleichungen.</li>
+  </ol>
+  <div class="merke">Abkürzung: Hat eine Zeile nur eine Variable (zum Beispiel „r = 5“), setze sofort ein. Du musst nicht stur die ganze Treppe bauen.</div>
+
+  <h3>Wie viele Lösungen? Die letzte Zeile verrät es</h3>
+  <figure>
+    <svg viewBox="0 0 520 150" width="520" role="img" aria-label="Zwei Geraden: schneiden sich, parallel, identisch">
+      <g>
+        <line class="ln" x1="20" y1="120" x2="150" y2="30"/><line class="rd" x1="20" y1="40" x2="150" y2="115"/>
+        <circle class="pt" cx="82" cy="78" r="5"/>
+        <text class="b" x="20" y="142">genau eine Lösung</text>
+      </g>
+      <g transform="translate(180,0)">
+        <line class="ln" x1="20" y1="110" x2="150" y2="50"/><line class="rd" x1="20" y1="80" x2="150" y2="20"/>
+        <text class="b" x="20" y="142">keine Lösung</text>
+      </g>
+      <g transform="translate(360,0)">
+        <line class="ln" x1="20" y1="110" x2="150" y2="35" stroke-width="5"/><line class="rd" x1="20" y1="110" x2="150" y2="35"/>
+        <text class="b" x="10" y="142">unendlich viele Lösungen</text>
+      </g>
+    </svg>
+    <figcaption>Im Raum: Geraden schneiden sich (eine Lösung), sind windschief oder parallel (keine) oder identisch (unendlich viele).</figcaption>
+  </figure>
+  <div class="tablewrap">
+  <table>
+    <tr><th>Letzte Zeile der Stufenform</th><th>Bedeutung</th></tr>
+    <tr><td>Jede Variable hat in der Treppe eine eigene Zeile</td><td><span class="ok">Genau eine Lösung</span> (Schnittpunkt)</td></tr>
+    <tr><td>0 = 0 (Zeile fällt weg, weniger Gleichungen als Unbekannte)</td><td><b>Unendlich viele Lösungen</b>: eine Variable frei als Parameter s wählen</td></tr>
+    <tr><td>0 = c mit c ≠ 0</td><td><span class="no">Keine Lösung</span> (Widerspruch)</td></tr>
+  </table>
+  </div>
+  <div class="merke">Anzahl freier Parameter = Unbekannte − Anzahl der Zeilen ohne Nullzeile.</div>
+
+  <div class="bsp"><span class="tag">Klausur: Abi 2024, Wahlpflicht 3 (1), Schnittpunkt als LGS (Unbekannte t, r)</span>
+    <p>g = h ergibt: 2t − r = 4, t = 2 und 3 − 2t = −1 + 2r, also −2t − 2r = −4.</p>
+    <p>
+      <span class="mat"><span class="r"><i>2</i><i>−1</i><i class="sep">4</i><em class="op"></em></span><span class="r"><i>1</i><i>0</i><i class="sep">2</i><em class="op"></em></span><span class="r"><i>−2</i><i>−2</i><i class="sep">−4</i><em class="op"></em></span></span>
+      ⇒
+      <span class="mat"><span class="r"><i>1</i><i>0</i><i class="sep">2</i><em class="op">I ↔ II</em></span><span class="r"><i>2</i><i>−1</i><i class="sep">4</i><em class="op"></em></span><span class="r"><i>−2</i><i>−2</i><i class="sep">−4</i><em class="op"></em></span></span>
+    </p>
+    <p>
+      <span class="mat"><span class="r"><i>1</i><i>0</i><i class="sep">2</i><em class="op"></em></span><span class="r"><i>0</i><i>−1</i><i class="sep">0</i><em class="op">II − 2·I</em></span><span class="r"><i>0</i><i>−2</i><i class="sep">0</i><em class="op">III + 2·I</em></span></span>
+      ⇒
+      <span class="mat"><span class="r"><i>1</i><i>0</i><i class="sep">2</i><em class="op"></em></span><span class="r"><i>0</i><i>−1</i><i class="sep">0</i><em class="op"></em></span><span class="r"><i>0</i><i>0</i><i class="sep">0</i><em class="op">III − 2·II</em></span></span>
+    </p>
+    <p>Letzte Zeile 0 = 0, keine Zusatzbedingung. II: r = 0. I: t = 2. <span class="ok">Genau eine Lösung</span>, S(4|2|−1).</p>
+  </div>
+
+  <div class="bsp"><span class="tag">Keine Lösung (abgewandelt: h beginnt bei (4|2|0) statt (4|2|−1))</span>
+    <p>Dieselben Schritte mit rechter Seite III = −3 statt −4 führen auf die letzte Zeile:</p>
+    <p><span class="mat"><span class="r"><i>0</i><i>0</i><i class="sep">1</i><em class="op"></em></span></span> also 0 = 1, <span class="no">Widerspruch</span>.</p>
+    <p>Schluss: kein gemeinsamer Punkt. Richtungsvektoren (2|1|−2) und (1|0|2) sind keine Vielfachen, also sind die Geraden <b>windschief</b>.</p>
+  </div>
+
+  <div class="bsp"><span class="tag">Unendlich viele Lösungen (Schnitt zweier Ebenen, Beispiel)</span>
+    <p>x + y + z = 6 und y − z = 1</p>
+    <p><span class="mat"><span class="r"><i>1</i><i>1</i><i>1</i><i class="sep">6</i></span><span class="r"><i>0</i><i>1</i><i>−1</i><i class="sep">1</i></span></span> ist schon in Stufenform. Zwei Zeilen, drei Unbekannte: ein Parameter.</p>
+    <p>Setze z = s. Dann y = 1 + s und x = 6 − (1 + s) − s = 5 − 2s.</p>
+    <p>Lösungsmenge: x = <span class="vec">5|1|0</span> + s·<span class="vec">−2|1|1</span>, das ist eine <b>Gerade</b>.</p>
+  </div>
+
+  <div class="bsp"><span class="tag">Punkt in Ebene (abgewandelt aus Abi 2025, Wahlpflicht 4)</span>
+    <p>E: (1|−3|0) + r·(−3|4|1) + s·(3|−4|0). Liegt Q(1|−3|5) in E?</p>
+    <p>I: 1 = 1 − 3r + 3s ⇒ −3r + 3s = 0<br>II: −3 = −3 + 4r − 4s ⇒ 4r − 4s = 0<br>III: 5 = r</p>
+    <p>III liefert sofort r = 5. I: s = 5. II: 20 − 20 = 0 stimmt. <span class="ok">Q liegt in E.</span></p>
+  </div>
+
+  <div class="bsp"><span class="tag">Klausur: Abi 2024, b (2), Punkt auf der Kante in der Ebene</span>
+    <p>6 = 3m + 7,5n; 0 = 4m; r = 5 − 5n. Die zweite Zeile gibt m = 0, dann n = 0,8, dann r = 1. Das LGS ist schon fast in Stufenform.</p>
+  </div>
+
+  <details>
+    <summary>CAS und Teil A</summary>
+    <p>Im Teil B nimmst du das CAS (Befehl solve, löse oder rref, je nach Gerät). Trotzdem gehört der Ansatz (die aufgestellten Gleichungen) und ein Antwortsatz auf dein Blatt. Im Teil A ohne Hilfsmittel rechnest du Gauß von Hand, meistens mit kleinen Zahlen. Übe deshalb mindestens zwei der Beispiele hier ohne CAS.</p>
+  </details>
+</section>
+
+<!-- ============ 2 Punktprobe ============ -->
+<section class="card" id="punktprobe" data-title="Punktprobe">
+  <header><h2>Punktprobe: Liegt P auf g?</h2><button class="kann" aria-pressed="false">Kann ich</button></header>
+  <div class="merke">Alle drei Zeilen müssen denselben Parameter s liefern. Ein einziger Widerspruch reicht für „liegt nicht auf g“.</div>
+  <ol class="rezept">
+    <li>Setze P = Aufpunkt + s · Richtung, das ergibt drei Gleichungen (I, II, III).</li>
+    <li>Löse Zeile I nach s auf.</li>
+    <li>Setze dieses s in II und III ein oder löse sie einzeln.</li>
+    <li>Alle gleich: P liegt auf g. Verschieden: P liegt nicht auf g.</li>
+  </ol>
+  <div class="bsp"><span class="tag">Klausur: Abi 2025, Pflicht 2 (1)</span>
+    <p>g: x = <span class="vec">8|3|−3</span> + s·<span class="vec">−4|0|3</span>, P(4|3|3)</p>
+    <p>I: 4 = 8 − 4s ⇒ s = 1<br>II: 3 = 3 (immer wahr)<br>III: 3 = −3 + 3s ⇒ s = 2</p>
+    <p><span class="no">Widerspruch (1 ≠ 2)</span>, also liegt P nicht auf g.</p>
+    <p><b>Punkt Q auf g, der sich nur in einer Koordinate von P unterscheidet:</b> Nimm s = 1 (das hat Zeile I und II erfüllt). Dann ist Q(4|3|0). Nur die dritte Koordinate ist anders.</p>
+  </div>
+  <div class="bsp"><span class="tag">Klausur: Abi 2023, d (1)</span>
+    <p>A(4|0|0) auf g: x = (2|3|−7) + s·(1|0|5)? Zeile II: 0 = 3 ist falsch. <span class="no">Schon eine Zeile genügt</span>, A liegt nicht auf g.</p>
+  </div>
+</section>
+
+<!-- ============ 3 Skalarprodukt ============ -->
+<section class="card" id="skalar" data-title="Skalarprodukt">
+  <header><h2>Skalarprodukt: senkrecht und Winkel</h2><button class="kann" aria-pressed="false">Kann ich</button></header>
+  <div class="merke">
+    <span class="f">a ⊥ b genau dann, wenn a∘b = 0</span>
+    <span class="f">cos(φ) = (a∘b) / (|a| · |b|), dann φ = cos⁻¹(…) im CAS</span>
+    <small>Winkel am Punkt D: Nimm die beiden Vektoren, die von D wegzeigen (DE und DF).</small>
+  </div>
+  <figure>
+    <svg viewBox="0 0 520 150" width="520" role="img" aria-label="Skalarprodukt positiv, null, negativ">
+      <g transform="translate(20,0)">
+        <line class="ln" x1="20" y1="110" x2="130" y2="110" marker-end="url(#ab)"/>
+        <line class="rd" x1="20" y1="110" x2="100" y2="40" marker-end="url(#ar)"/>
+        <path class="thin" d="M55 110 A35 35 0 0 0 46 86"/>
+        <text class="b" x="20" y="135">Winkel unter 90°</text><text class="i" x="20" y="20">a∘b &gt; 0</text>
+      </g>
+      <g transform="translate(190,0)">
+        <line class="ln" x1="20" y1="110" x2="130" y2="110" marker-end="url(#ab)"/>
+        <line class="rd" x1="20" y1="110" x2="20" y2="30" marker-end="url(#ar)"/>
+        <path class="ln" d="M20 96 h14 v14"/>
+        <text class="b" x="20" y="135">genau 90°</text><text class="r" x="20" y="20">a∘b = 0</text>
+      </g>
+      <g transform="translate(360,0)">
+        <line class="ln" x1="40" y1="110" x2="140" y2="110" marker-end="url(#ab)"/>
+        <line class="rd" x1="40" y1="110" x2="5" y2="40" marker-end="url(#ar)"/>
+        <text class="b" x="10" y="135">über 90°</text><text class="i" x="10" y="20">a∘b &lt; 0</text>
+      </g>
+    </svg>
+    <figcaption>Das Vorzeichen verrät dir den Winkel, die Null bedeutet senkrecht.</figcaption>
+  </figure>
+
+  <div class="bsp"><span class="tag">Klausur: Abi 2025, Pflicht 2 (2), Geraden senkrecht?</span>
+    <p>h ∥ y-Achse hat Richtung <span class="vec">0|1|0</span>. g hat <span class="vec">−4|0|3</span>.</p>
+    <p>(−4)·0 + 0·1 + 3·0 = 0 ⇒ <span class="ok">senkrecht</span></p>
+  </div>
+  <div class="bsp"><span class="tag">Klausur: Abi 2024, Pflicht 2 (1), BA ⊥ BC?</span>
+    <p>A(2|4|5), B(1|2|3), C(7|5|−3): BA = <span class="vec">1|2|2</span>, BC = <span class="vec">6|3|−6</span></p>
+    <p>1·6 + 2·3 + 2·(−6) = 6 + 6 − 12 = 0 ⇒ <span class="ok">orthogonal</span></p>
+  </div>
+  <div class="bsp"><span class="tag">Klausur: Abi 2023, e (1), rechter Winkel bei A?</span>
+    <p>AB = <span class="vec">2|−1|2</span>, AC = <span class="vec">3|1|−3</span>: 6 − 1 − 6 = −1 ≠ 0 ⇒ <span class="no">kein rechter Winkel</span></p>
+  </div>
+  <div class="bsp"><span class="tag">Klausur: Abi 2025 b (2), Innenwinkel bei D</span>
+    <p>D(−2|0|4), E(2|0|4), F(0|8|4): DE = <span class="vec">4|0|0</span>, DF = <span class="vec">2|8|0</span></p>
+    <p>cos δ = 8 / (4 · √68) = 1/√17 ⇒ δ ≈ 75,96°</p>
+  </div>
+  <div class="bsp"><span class="tag">Klausur: Abi 2024 a (2), Innenwinkel bei D</span>
+    <p>D(6|0|5), E(0|8|5), F(0|0|5): DE = <span class="vec">−6|8|0</span>, DF = <span class="vec">−6|0|0</span></p>
+    <p>cos δ = 36 / (10 · 6) = 0,6 ⇒ δ ≈ 53,13°</p>
+  </div>
+  <div class="bsp"><span class="tag">Klausur: Abi 2024 b (4), rechter Winkel bei M gesucht (Parameter t)</span>
+    <p>M(3|4|5), F(0|0|5), S_t(t|0|0): MF = <span class="vec">−3|−4|0</span>, MS = <span class="vec">t−3|−4|−5</span></p>
+    <p>MF∘MS = −3(t − 3) + 16 = 0 ⇒ 25 − 3t = 0 ⇒ t = 25/3 ≈ 8,33</p>
+    <p><b>Trick:</b> „rechter Winkel bei M“ heißt immer: Skalarprodukt der zwei Vektoren, die von M ausgehen, gleich 0. Dann nach t auflösen.</p>
+  </div>
+</section>
+
+<!-- ============ 4 Lage von Geraden ============ -->
+<section class="card" id="lage" data-title="Lage von Geraden">
+  <header><h2>Lage zweier Geraden</h2><button class="kann" aria-pressed="false">Kann ich</button></header>
+  <div class="flow">
+    <div class="box"><b>Sind die Richtungsvektoren Vielfache voneinander?</b></div>
+    <div class="yn">
+      <div class="box yes"><b>Ja:</b> parallel. Aufpunkt der einen in die andere einsetzen (Punktprobe): passt er, sind sie identisch, sonst echt parallel.</div>
+      <div class="box nope"><b>Nein:</b> Gleichsetzen mit zwei verschiedenen Parametern (t und r), drei Gleichungen.</div>
+    </div>
+    <div class="arrow">↓ aus zwei Gleichungen t und r berechnen, in die dritte einsetzen</div>
+    <div class="yn">
+      <div class="box yes"><b>Dritte stimmt:</b> Schnittpunkt. t in g einsetzen.</div>
+      <div class="box nope"><b>Dritte stimmt nicht:</b> windschief.</div>
+    </div>
+  </div>
+  <div class="bsp"><span class="tag">Klausur: Abi 2024, Wahlpflicht 3 (1), Schnittpunkt</span>
+    <p>g: x = <span class="vec">0|0|3</span> + t·<span class="vec">2|1|−2</span>, h: x = <span class="vec">4|2|−1</span> + r·<span class="vec">1|0|2</span></p>
+    <p>II: t = 2. I: 2t = 4 + r ⇒ 4 = 4 + r ⇒ r = 0.<br>III: 3 − 2·2 = −1 und −1 + 2·0 = −1 <span class="ok">stimmt</span></p>
+    <p>t = 2 in g: <b>S(4|2|−1)</b></p>
+  </div>
+  <div class="bsp"><span class="tag">Klausur: Abi 2023, d (2), Parameter b bestimmen</span>
+    <p>g: (2|3|−7) + s·(1|0|5), h durch A(4|0|0) und B(5|1|b), Richtung <span class="vec">1|1|b</span></p>
+    <p>Gleichsetzen: II: r = 3. I: 4 + r = 2 + s ⇒ s = 5. III: 3b = −7 + 25 ⇒ <b>b = 6</b></p>
+  </div>
+  <h3>Sonderfall: Gerade und Strecke</h3>
+  <div class="merke">Die Gerade trifft die Strecke SM nur, wenn der Parameter der Strecke zwischen 0 und 1 liegt. S bei q = 0, M bei q = 1.</div>
+  <div class="bsp"><span class="tag">Klausur: Abi 2024, b (3)</span>
+    <p>h: (7,5|0|0) + q·(−4,5|4|5), g: (−1,5|8|10) + k·(7,5|0|−5)</p>
+    <p>II: 8 = 4q ⇒ q = 2. I ergibt k = 0. III: 10 = 10 stimmt. Die Geraden schneiden sich bei q = 2.</p>
+    <p><span class="no">q = 2 liegt nicht in [0; 1]</span>, also gibt es keinen gemeinsamen Punkt von g und der Strecke SM.</p>
+  </div>
+</section>
+
+<!-- ============ 5 Punkte auf Geraden ============ -->
+<section class="card" id="abstand" data-title="Punkte mit Abstand">
+  <header><h2>Punkte auf einer Geraden mit festem Abstand</h2><button class="kann" aria-pressed="false">Kann ich</button></header>
+  <figure>
+    <svg viewBox="0 0 400 110" width="400" role="img" aria-label="Zwei Punkte P und Q im gleichen Abstand von A auf einer Geraden">
+      <line class="ln" x1="20" y1="60" x2="380" y2="60"/>
+      <circle class="pt" cx="200" cy="60" r="6"/><circle class="ptr" cx="80" cy="60" r="6"/><circle class="ptr" cx="320" cy="60" r="6"/>
+      <text class="i" x="192" y="88">A</text><text class="r" x="72" y="88">Q</text><text class="r" x="312" y="88">P</text>
+      <text x="115" y="45">9 LE</text><text x="245" y="45">9 LE</text>
+      <text x="20" y="20">Immer zwei Lösungen: eine Richtung vor, eine zurück.</text>
+    </svg>
+  </figure>
+  <div class="merke">Punkt X = A + s · v mit |s · v| = Abstand, also s = ± Abstand / |v|.</div>
+  <ol class="rezept">
+    <li>Richtungsvektor v der Geraden aufstellen, Länge |v| berechnen.</li>
+    <li>s = ± Abstand / |v| bestimmen.</li>
+    <li>Beide Werte in X = A + s·v einsetzen, das gibt zwei Punkte.</li>
+  </ol>
+  <div class="bsp"><span class="tag">Klausur: Abi 2023, e (2)</span>
+    <p>A(−1|3|2), B(1|2|4): AB = <span class="vec">2|−1|2</span>, |AB| = 3. Abstand 9 = 3 · |AB|, also s = ±3.</p>
+    <p><b>P = A + 3·AB = (5|0|8)</b><br><b>Q = A − 3·AB = (−7|6|−4)</b></p>
+  </div>
+  <h3>Sonderfall: Spiegelpunkt am Punkt R</h3>
+  <div class="merke">Gleicher Abstand wie P zu R, auf derselben Geraden: P′ = 2R − P (R ist die Mitte zwischen P und P′).</div>
+  <div class="bsp"><span class="tag">Klausur: Abi 2024, Wahlpflicht 3 (2)</span>
+    <p>P(0|0|3), R(2|1|1): P′ = 2·(2|1|1) − (0|0|3) = <b>(4|2|−1)</b></p>
+  </div>
+</section>
+
+<!-- ============ 6 Dreiecke / Vierecke ============ -->
+<section class="card" id="dreieck" data-title="Dreiecke und Vierecke">
+  <header><h2>Dreiecke und Vierecke</h2><button class="kann" aria-pressed="false">Kann ich</button></header>
+
+  <h3>Rechteck ergänzen</h3>
+  <figure>
+    <svg viewBox="0 0 340 170" width="340" role="img" aria-label="Rechteck ABCD, D wird aus A plus BC berechnet">
+      <polygon class="fillsoft" points="60,140 60,50 250,50 250,140" opacity=".55"/>
+      <path class="ln" d="M60 126 h14 v14"/>
+      <line class="rd" x1="60" y1="140" x2="250" y2="140" marker-end="url(#ar)"/>
+      <circle class="pt" cx="60" cy="140" r="5"/><circle class="pt" cx="60" cy="50" r="5"/><circle class="pt" cx="250" cy="140" r="5"/><circle class="ptr" cx="250" cy="50" r="6"/>
+      <text class="i" x="34" y="150">B</text><text class="i" x="34" y="48">A</text><text class="i" x="258" y="156">C</text><text class="r" x="258" y="46">D</text>
+      <text class="r" x="120" y="162">BC</text><text x="70" y="98">BA</text>
+    </svg>
+    <figcaption>Rechter Winkel bei B. Von A aus einmal um BC weitergehen: D = A + BC.</figcaption>
+  </figure>
+  <div class="bsp"><span class="tag">Klausur: Abi 2024, Pflicht 2 (2) und (3)</span>
+    <p>BA = (1|2|2), BC = (6|3|−6), Skalarprodukt 0 (siehe Skalarprodukt).</p>
+    <p>D = A + BC = (2|4|5) + (6|3|−6) = <b>(8|7|2)</b></p>
+    <p>|BA| = 3, |BC| = 9 ⇒ Fläche = 3 · 9 = <b>27 FE</b></p>
+  </div>
+  <div class="bsp"><span class="tag">Klausur: Abi 2022, Aufgabe 6.1, Sonnensegel ist ein Rechteck</span>
+    <p>A(10|1|2), B(10|9|2), C(6|9|5), D(6|1|5). AB = (0|8|0), DC = (0|8|0), also gleich lang und parallel (Parallelogramm).</p>
+    <p>AB∘AD = (0|8|0)∘(−4|0|3) = 0 ⇒ rechter Winkel ⇒ <span class="ok">Rechteck</span>. Fläche = 8 · 5 = <b>40 FE</b>.</p>
+  </div>
+
+  <h3>Gleichschenkliges Dreieck und Fläche</h3>
+  <figure>
+    <svg viewBox="0 0 360 200" width="360" role="img" aria-label="Gleichschenkliges Dreieck mit Basis OQ und Höhe zur Spitze P">
+      <polygon class="fillsoft" points="40,170 320,170 180,40" opacity=".55"/>
+      <line class="rd" x1="180" y1="40" x2="180" y2="170"/>
+      <path class="ln" d="M180 156 h-14 v14"/>
+      <circle class="pt" cx="40" cy="170" r="5"/><circle class="pt" cx="320" cy="170" r="5"/><circle class="ptr" cx="180" cy="40" r="5"/><circle class="pt" cx="180" cy="170" r="4"/>
+      <text class="i" x="24" y="190">O</text><text class="i" x="322" y="190">Q</text><text class="i" x="174" y="30">P (Spitze)</text><text class="r" x="176" y="188">M</text>
+      <text x="90" y="192">3</text><text x="250" y="192">3</text>
+      <text x="80" y="95">Schenkel √11</text><text class="r" x="188" y="115">h = √2</text>
+    </svg>
+    <figcaption>Basis in der Mitte teilen, dann Pythagoras: h = √(Schenkel² − (Basis/2)²).</figcaption>
+  </figure>
+  <div class="merke">
+    <span class="f">Gleichschenklig zeigen: zwei Seiten gleich lang (|AC| = |BC|, Basis AB)</span>
+    <span class="f">Fläche: A = ½ · Basis · Höhe</span>
+  </div>
+  <div class="bsp"><span class="tag">Klausur: Abi 2025, Wahlpflicht 3 (2)</span>
+    <p>Basis |OQ| = 6, Schenkel |OP| = √11. Halbe Basis 3, also h = √(11 − 9) = √2.</p>
+    <p>A = ½ · 6 · √2 = <b>3√2 ≈ 4,24 FE</b></p>
+  </div>
+  <div class="bsp"><span class="tag">Klausur: Abi 2022, d (1) und (2)</span>
+    <p>A(0|0|0), B(8|6|0), C(4|3|z).<br>|AC| = √(16 + 9 + z²) und |BC| = √(16 + 9 + z²) ⇒ gleich ⇒ gleichschenklig mit Basis AB.</p>
+    <p>|AB| = 10. Fläche 35 = ½ · 10 · h ⇒ h = 7. Die Höhe geht von M(4|3|0) nach C, also MC = (0|0|z) ⇒ <b>z = 7</b>.</p>
+  </div>
+
+  <h3>Trapez begründen</h3>
+  <div class="merke">Trapez: genau ein Paar gegenüberliegender Seiten ist parallel (Vektoren Vielfache), das andere Paar nicht.</div>
+  <div class="bsp"><span class="tag">Klausur: Abi 2023, a (2)</span>
+    <p>Bei A₂A₃B₃B₂ sind A₂A₃ und B₂B₃ beide parallel zur x₁-Achse, aber verschieden lang. A₃B₃ = (0|0|30) und A₂B₂ = (−40|0|30) sind nicht parallel.</p>
+  </div>
+</section>
+
+<!-- ============ 7 Körper ============ -->
+<section class="card" id="koerper" data-title="Prisma und Quader">
+  <header><h2>Körper: Prisma und Quader</h2><button class="kann" aria-pressed="false">Kann ich</button></header>
+  <div class="tablewrap">
+  <table>
+    <tr><th>Gesucht</th><th>Formel / Vorgehen</th></tr>
+    <tr><td>Koordinaten ablesen (gerades Prisma)</td><td>Punkt darüber hat dieselben x₁, x₂, nur die Höhe kommt dazu</td></tr>
+    <tr><td>Volumen</td><td>V = Grundfläche · Höhe</td></tr>
+    <tr><td>Oberfläche</td><td>2 · Grundfläche + alle Seitenrechtecke</td></tr>
+    <tr><td>„parallel zur x₁x₂-Ebene“</td><td>Alle Punkte haben dieselbe x₃-Koordinate</td></tr>
+    <tr><td>Punkte auf einem Kreis um M</td><td>|MD| = |ME| = |MF|</td></tr>
+  </table>
+  </div>
+  <div class="bsp"><span class="tag">Klausur: Abi 2025, a) Volumen</span>
+    <p>Grundfläche Dreieck ABC: ½ · 4 · 8 = 16, Höhe 4 ⇒ V = 16 · 4 = <b>64 VE</b></p>
+  </div>
+  <div class="bsp"><span class="tag">Klausur: Abi 2025, b (3)</span>
+    <p>D(−2|0|4), E(2|0|4), F(0|8|4): alle x₃ = 4 ⇒ DEF liegt parallel zur x₁x₂-Ebene.</p>
+  </div>
+  <div class="bsp"><span class="tag">Klausur: Abi 2024, a (1), (3), (4)</span>
+    <p>D(6|0|5) liegt direkt über A ⇒ <b>A(6|0|0)</b>.</p>
+    <p>Oberfläche: Grundfläche ½·6·8 = 24, zweimal = 48. Rechtecke: 6·5 + 8·5 + 10·5 = 120. Gesamt <b>168 FE</b>.</p>
+    <p>Kreis um M(3|4|5): |MD| = |ME| = 5 (M ist Mitte der Strecke DE, Länge 10). |MF| = |(3|4|0)| = 5. Alle gleich ⇒ D, E, F liegen auf einem Kreis um M.</p>
+  </div>
+  <div class="bsp"><span class="tag">Klausur: Abi 2024, Wahlpflicht 4, Quader verschieben</span>
+    <p>A(1|1|0), B(4|1|0), E(1|1|4), H(1|7|4). Länge 3, Breite 6, Höhe 4 ⇒ G(4|7|4).</p>
+    <p>Schnittpunkt der Raumdiagonalen: M = ½(A + G) = (2,5|4|2). Er soll in den Ursprung: Verschiebung um −M.</p>
+    <p>H′ = H − M = <b>(−1,5|3|2)</b><br>Nur positive Koordinaten hat G′ = G − M = <b>(1,5|3|2)</b></p>
+  </div>
+  <div class="bsp"><span class="tag">Klausur: Abi 2025, Wahlpflicht 3 (1)</span>
+    <p>P(3|1|−1) und Q(4|2|−4): x₃ ist bei beiden negativ ⇒ beide liegen unterhalb der x₁x₂-Ebene, also auf derselben Seite.</p>
+  </div>
+  <div class="bsp"><span class="tag">Klausur: Abi 2023, b, Innenhof (gleichseitiges Dreieck)</span>
+    <p>A₃(√75/3 | 5 | 0), A₄ analog mit −5. Seite A₃A₄ = 10. P liegt auf der x₁-Achse (Symmetrie), also P(x|0|0) mit |A₃P| = 10:</p>
+    <p>(x − √75/3)² + 5² = 100 ⇒ x = √75/3 − √75 = −2√75/3 ≈ −5,77</p>
+    <p>Abstand A₄ zum Ursprung: √(75/9 + 25) = 10/√3 ≈ <b>5,77</b></p>
+  </div>
+</section>
+
+<!-- ============ 8 Ebenen ============ -->
+<section class="card" id="ebenen" data-title="Ebenen">
+  <header><h2>Ebenen</h2><button class="kann" aria-pressed="false">Kann ich</button></header>
+  <div class="merke">
+    <span class="f">Parameterform aus drei Punkten A, B, C:</span>
+    <span class="f">x = A + r · AB + s · AC</span>
+    <small>Ein Punkt als Stützvektor, zwei Verbindungsvektoren (nicht parallel) als Spannvektoren.</small>
+  </div>
+  <div class="bsp"><span class="tag">Klausur: Abi 2025, b (1)</span>
+    <p>D(−2|0|4), E(2|0|4), F(0|8|4): DE = (4|0|0), DF = (2|8|0)</p>
+    <p>L: x = <span class="vec">−2|0|4</span> + r·<span class="vec">4|0|0</span> + s·<span class="vec">2|8|0</span></p>
+  </div>
+  <div class="bsp"><span class="tag">Klausur: Abi 2024, b (1), „Begründen Sie, dass das eine Gleichung von W ist“</span>
+    <p>Stützvektor F(0|0|5). FM = M − F = (3|4|0). FS = S − F = (7,5|0|−5). Genau die beiden Spannvektoren der Gleichung, und sie sind nicht parallel. Also enthält die Ebene M, F und S.</p>
+  </div>
+  <div class="bsp"><span class="tag">Klausur: Abi 2023, c (1)</span>
+    <p>E: (50|−5|0) + r·(0|10|0) + s·(−40|10|30). Stützpunkt ist A₁. Für A₂ gilt r = 1, s = 0. Für B₂ gilt r = 0, s = 1. Für B₁ gilt r = −1, s = 1. Alle Ecken liegen in E.</p>
+  </div>
+
+  <h3>Vektor senkrecht zur Ebene</h3>
+  <div class="merke">n ist senkrecht zur Ebene, wenn n senkrecht auf beiden Spannvektoren steht: n∘u = 0 und n∘v = 0.</div>
+  <div class="bsp"><span class="tag">Klausur: Abi 2025, Wahlpflicht 4 (1)</span>
+    <p>E: (1|−3|0) + r·(−3|4|1) + s·(3|−4|0), n = (4|3|0)</p>
+    <p>n∘u = −12 + 12 + 0 = 0 und n∘v = 12 − 12 + 0 = 0 ⇒ <span class="ok">n steht senkrecht zu E</span></p>
+  </div>
+
+  <h3>Punkt spiegeln, Abstand vorgegeben</h3>
+  <figure>
+    <svg viewBox="0 0 380 190" width="380" role="img" aria-label="Punkt P und Spiegelpunkt P′ mit gleichem Abstand zur Ebene E">
+      <line class="ln" x1="20" y1="100" x2="360" y2="100"/>
+      <text class="i" x="330" y="90">Ebene E</text>
+      <line class="rd" x1="150" y1="30" x2="150" y2="170"/>
+      <circle class="pt" cx="150" cy="30" r="6"/><circle class="ptr" cx="150" cy="170" r="6"/><circle class="pt" cx="150" cy="100" r="4"/>
+      <text class="i" x="162" y="34">P</text><text class="r" x="162" y="174">P′</text>
+      <text x="162" y="70">10</text><text x="162" y="140">10</text>
+      <line class="ln" x1="250" y1="100" x2="250" y2="40" marker-end="url(#ab)"/>
+      <text class="i" x="258" y="60">n</text>
+      <text x="20" y="20">|PP′| = 20 ⇒ P hat Abstand 10 zur Ebene</text>
+    </svg>
+    <figcaption>Punkt und Spiegelpunkt liegen auf einer Linie senkrecht zur Ebene, gleich weit entfernt.</figcaption>
+  </figure>
+  <div class="bsp"><span class="tag">Klausur: Abi 2025, Wahlpflicht 4 (2)</span>
+    <p>Gesucht: P mit Abstand 10 zur Ebene (dann ist |PP′| = 20).</p>
+    <p>Länge des Normalenvektors: |n| = |(4|3|0)| = 5. Zwei Längen sind 10 ⇒ vom Stützpunkt (1|−3|0) um 2·n = (8|6|0) gehen.</p>
+    <p><b>P(9|3|0)</b>, der Fußpunkt ist der Stützpunkt, Abstand 10, Spiegelpunkt P′ = (−7|−9|0).</p>
+  </div>
+</section>
+
+<!-- ============ Kreuzprodukt und Koordinatenform ============ -->
+<section class="card" id="kreuz" data-title="Kreuzprodukt und Koordinatenform">
+  <header><h2>Abhängigkeit, Kreuzprodukt, Koordinatenform</h2><button class="kann" aria-pressed="false">Kann ich</button></header>
+
+  <h3>Lineare Abhängigkeit</h3>
+  <div class="merke">
+    <span class="f">Zwei Vektoren abhängig, genau dann wenn a = k · b (parallel).</span>
+    <span class="f">Drei Vektoren abhängig, genau dann wenn a = r·b + s·c lösbar ist (LGS). Sie liegen dann in einer Ebene.</span>
+    <small>Eine Ebene braucht zwei unabhängige Spannvektoren.</small>
+  </div>
+  <div class="bsp"><span class="tag">Klausur: Abi 2025, Wahlpflicht 4, sind die Spannvektoren unabhängig?</span>
+    <p>u = (−3|4|1), v = (3|−4|0). Erste Zeile: k = −1. Dritte Zeile: 1 = k · 0, also 1 = 0, Widerspruch. Kein k passt, also <span class="ok">unabhängig</span>.</p>
+  </div>
+
+  <h3>Kreuzprodukt</h3>
+  <div class="merke">
+    <span class="f">a × b = (a₂b₃ − a₃b₂ | a₃b₁ − a₁b₃ | a₁b₂ − a₂b₁)</span>
+    <span class="f">a × b steht senkrecht auf a und auf b.</span>
+    <span class="f">|a × b| = Fläche des Parallelogramms, Dreieck: A = ½ · |AB × AC|</span>
+  </div>
+  <div class="bsp"><span class="tag">Klausur: Abi 2025, Wahlpflicht 4, Normalenvektor der Ebene finden</span>
+    <p>u = (−3|4|1), v = (3|−4|0)</p>
+    <p>u × v = (4·0 − 1·(−4) | 1·3 − (−3)·0 | (−3)(−4) − 4·3) = <b>(4|3|0)</b></p>
+    <p>Genau der Vektor n aus der Aufgabe. Statt zwei Skalarprodukte zu prüfen, hättest du ihn so berechnen können.</p>
+  </div>
+  <div class="bsp"><span class="tag">Kontrolle: Abi 2025, Wahlpflicht 3 (2), Dreiecksfläche</span>
+    <p>OP = (3|1|−1), OQ = (4|2|−4)</p>
+    <p>OP × OQ = (1·(−4) − (−1)·2 | (−1)·4 − 3·(−4) | 3·2 − 1·4) = (−2|8|2)</p>
+    <p>|OP × OQ| = √72 = 6√2, Fläche = ½ · 6√2 = <b>3√2</b>. Dasselbe Ergebnis wie mit Basis und Höhe.</p>
+  </div>
+
+  <h3>Koordinatenform der Ebene</h3>
+  <div class="merke">
+    <span class="f">E: n₁x₁ + n₂x₂ + n₃x₃ = d mit d = n ∘ (Stützpunkt)</span>
+    <small>n ist der Normalenvektor (Kreuzprodukt der Spannvektoren).</small>
+  </div>
+  <ol class="rezept">
+    <li>Normalenvektor n = u × v berechnen.</li>
+    <li>Stützpunkt A in n∘x einsetzen, das gibt d.</li>
+    <li>Probe mit einem zweiten Punkt der Ebene.</li>
+  </ol>
+  <div class="bsp"><span class="tag">Klausur: Abi 2025, Wahlpflicht 4, Ebene E</span>
+    <p>n = (4|3|0), Stützpunkt (1|−3|0): d = 4·1 + 3·(−3) = −5</p>
+    <p>E: <b>4x₁ + 3x₂ = −5</b></p>
+    <p>Punktprobe geht jetzt in einer Zeile: Q(1|−3|5) ⇒ 4 − 9 = −5 stimmt, Q liegt in E.</p>
+  </div>
+  <div class="bsp"><span class="tag">Klausur: Abi 2022, Aufgabe 6, Ebene des Sonnensegels</span>
+    <p>AB = (0|8|0), AD = (−4|0|3) ⇒ AB × AD = (24|0|32) = 8 · (3|0|4)</p>
+    <p>d = 3·10 + 4·2 = 38 ⇒ <b>3x₁ + 4x₃ = 38</b> (diese Ebene brauchst du im Schatten-Beispiel).</p>
+  </div>
+
+  <h3>Abstand Punkt und Ebene</h3>
+  <div class="merke">d(P, E) = |n∘P − d| / |n|, wobei E: n∘x = d</div>
+  <div class="bsp"><span class="tag">Kontrolle zur Spiegel-Aufgabe (Abi 2025, Wahlpflicht 4 (2))</span>
+    <p>P(9|3|0), E: 4x₁ + 3x₂ = −5, |n| = 5</p>
+    <p>|4·9 + 3·3 − (−5)| / 5 = 50 / 5 = <b>10</b>. Der Spiegelpunkt hat also Abstand 20 von P.</p>
+  </div>
+
+  <h3>Gerade und Ebene: Lage</h3>
+  <div class="merke">Setze die Gerade in die Koordinatenform ein und löse nach t. Das ist wieder ein LGS mit einer Unbekannten.</div>
+  <div class="tablewrap">
+  <table>
+    <tr><th>Ergebnis</th><th>Bedeutung</th></tr>
+    <tr><td>Genau ein t</td><td>Gerade schneidet die Ebene (Schnittpunkt mit diesem t)</td></tr>
+    <tr><td>0 = 0</td><td>Gerade liegt in der Ebene</td></tr>
+    <tr><td>0 = c mit c ≠ 0</td><td>Gerade ist echt parallel zur Ebene</td></tr>
+  </table>
+  </div>
+  <div class="bsp"><span class="tag">Klausur: Abi 2022, Aufgabe 6.2 (siehe Schatten)</span>
+    <p>Gerade (8+t | 5−t | t) in 3x₁ + 4x₃ = 38: 24 + 3t + 4t = 38 ⇒ t = 2 ⇒ Schnittpunkt (10|3|2).</p>
+  </div>
+</section>
+
+<!-- ============ 9 Schatten ============ -->
+<section class="card" id="schatten" data-title="Schatten und Anwendungen">
+  <header><h2>Schatten und Anwendungsaufgaben</h2><button class="kann" aria-pressed="false">Kann ich</button></header>
+  <figure>
+    <svg viewBox="0 0 400 200" width="400" role="img" aria-label="Sonnenstrahl durch die Mastspitze trifft die Ebene">
+      <line class="ln" x1="20" y1="170" x2="380" y2="170"/>
+      <text x="300" y="190">Boden oder Ebene</text>
+      <line class="ln" x1="120" y1="170" x2="120" y2="40"/>
+      <circle class="pt" cx="120" cy="40" r="6"/><text class="i" x="90" y="34">S (Spitze)</text>
+      <line class="rd" x1="120" y1="40" x2="290" y2="170" marker-end="url(#ar)"/>
+      <circle class="ptr" cx="290" cy="170" r="6"/><text class="r" x="262" y="150">Schatten</text>
+      <text class="r" x="190" y="90">Strahl r</text>
+    </svg>
+    <figcaption>Der Schatten der Spitze ist der Punkt, wo die Strahlgerade die Ebene trifft.</figcaption>
+  </figure>
+  <ol class="rezept">
+    <li>Gerade durch den Punkt in Strahlrichtung: x = Punkt + t · r.</li>
+    <li>Mit der Ebene schneiden (Boden: x₃ = 0, sonst Ebenengleichung einsetzen).</li>
+    <li>Prüfen, ob der Schnittpunkt in der gefragten Fläche liegt (Parameter im erlaubten Bereich).</li>
+  </ol>
+  <div class="bsp"><span class="tag">Klausur: Abi 2023, c (2), Mast</span>
+    <p>S(0|0|35), Strahl r = (6|0|−2), Ebene E: (50|−5|0) + r·(0|10|0) + s·(−40|10|30)</p>
+    <p>x₃: 35 − 2t = 30s, x₁: 6t = 50 − 40s ⇒ s = 1,1 und t = 1. Schattenpunkt <b>(6|0|33)</b>.</p>
+    <p>Die Fläche geht nur bis x₃ = 30. Wegen 33 &gt; 30 <span class="no">liegt der Schatten nicht innerhalb der Fläche</span>.</p>
+  </div>
+  <div class="bsp"><span class="tag">Klausur: Abi 2022, Aufgabe 6.2, Punkt im Schatten des Segels?</span>
+    <p>Von P(8|5|0) gegen die Strahlrichtung gehen: P + t·(1|−1|1). Segelebene: 3x₁ + 4x₃ = 38.</p>
+    <p>3(8 + t) + 4t = 38 ⇒ t = 2 ⇒ Treffpunkt (10|3|2). Der liegt auf der Kante AB des Segels (x₁ = 10, x₃ = 2, x₂ zwischen 1 und 9).</p>
+    <p>Also liegt P gerade noch im Schatten (am Rand).</p>
+  </div>
+
+  <h3>Flugzeuge: Kollision?</h3>
+  <div class="merke">Kollision heißt: gleicher Ort zur gleichen Zeit. Dasselbe t in beide Geraden einsetzen, nicht t und r trennen.</div>
+  <div class="bsp"><span class="tag">Klausur: Abi 2022, Aufgabe 5</span>
+    <p>g₁: (100|200|2) + t·(1|200|10), g₂: (250|200|2) + t·(−2|200|15)</p>
+    <p><b>5.1</b> x₁ von g₁ ist 100 + t (wächst), von g₂ ist 250 − 2t (fällt). Abstand 150 − 3t schrumpft, bis t = 50: sie nähern sich zunächst an.</p>
+    <p><b>5.2</b> Höhengewinn: 10 m/s gegen 15 m/s ⇒ Flugzeug 2 steigt schneller. Bei t = 50 treffen sich die x₁-Werte, x₂ ist immer gleich. Höhe: 2 + 500 = 502 gegen 2 + 750 = 752. <span class="ok">Keine Kollision.</span></p>
+  </div>
+</section>
+
+<!-- ============ 10 Lot ============ -->
+<section class="card" id="lot" data-title="Lot und kleinste Fläche">
+  <header><h2>Lot: kürzester Abstand, kleinste Fläche</h2><button class="kann" aria-pressed="false">Kann ich</button></header>
+  <figure>
+    <svg viewBox="0 0 380 190" width="380" role="img" aria-label="Lot von M auf die Gerade g, Fußpunkt F4, andere Punkte sind weiter weg">
+      <line class="ln" x1="20" y1="150" x2="360" y2="150"/><text class="i" x="335" y="140">g</text>
+      <circle class="ptr" cx="190" cy="40" r="6"/><text class="r" x="200" y="38">M</text>
+      <line class="rd" x1="190" y1="40" x2="190" y2="150"/>
+      <path class="ln" d="M190 136 h14 v14"/>
+      <circle class="pt" cx="190" cy="150" r="5"/><text class="i" x="180" y="172">F₄ (Fußpunkt)</text>
+      <line class="thin" x1="190" y1="40" x2="90" y2="150"/><circle class="pt" cx="90" cy="150" r="4"/>
+      <line class="thin" x1="190" y1="40" x2="300" y2="150"/><circle class="pt" cx="300" cy="150" r="4"/>
+      <text x="110" y="95">länger</text><text x="255" y="95">länger</text>
+    </svg>
+    <figcaption>Die senkrechte Verbindung ist die kürzeste. Kürzeste Höhe ergibt bei gleicher Basis die kleinste Fläche.</figcaption>
+  </figure>
+  <div class="merke">Lot: (Vektor vom Punkt zum Geradenpunkt) ∘ (Richtung der Geraden) = 0. Daraus den Parameter berechnen.</div>
+  <div class="bsp"><span class="tag">Klausur: Abi 2025, c) und d)</span>
+    <p>F_t(0|t|12 − t), M(0|0|4) ⇒ MF_t = (0|t|8 − t), Richtung von g: (0|1|−1)</p>
+    <p><b>c) t = 4:</b> MF₄ = (0|4|4), Skalarprodukt 0·0 + 4·1 + 4·(−1) = 0 ⇒ <span class="ok">senkrecht auf g</span></p>
+    <p><b>Allgemein:</b> MF_t∘(0|1|−1) = t − (8 − t) = 2t − 8 = 0 ⇒ t = 4. Genau dann steht das Lot senkrecht.</p>
+    <p><b>d) Begründung ohne Rechnung:</b> Basis DE bleibt immer gleich, MF_t ist die Höhe. Bei t = 4 steht MF_t senkrecht auf g. Das ist der kürzeste Abstand von M zur Geraden, also die kleinste Höhe und damit der kleinste Flächeninhalt.</p>
+  </div>
+</section>
+
+<!-- ============ 11 Aufgabenstellung ============ -->
+<section class="card" id="erfinden" data-title="Aufgabenstellung angeben">
+  <header><h2>„Geben Sie eine passende Aufgabenstellung an“</h2><button class="kann" aria-pressed="false">Kann ich</button></header>
+  <p class="sub">Du sollst nur erkennen, was gerechnet wird, nicht rechnen.</p>
+  <div class="bsp"><span class="tag">Klausur: Abi 2024, b (2)</span>
+    <p>(I) P(6|0|r) mit 0 ≤ r ≤ 5: ein Punkt auf der Kante AD (x₁ = 6, x₂ = 0, Höhe zwischen 0 und 5).</p>
+    <p>(II) Gleichungssystem: P in die Ebenengleichung von W einsetzen.</p>
+    <p><b>Aufgabe:</b> „Bestimmen Sie r so, dass der Punkt P auf der Kante AD in der Ebene W liegt.“ Ergebnis: m = 0, n = 0,8, r = 5 − 5·0,8 = 1.</p>
+  </div>
+</section>
+
+<!-- ============ Schreibweise ============ -->
+<section class="card" id="operatoren">
+  <header><h2>Was der Prüfer sehen will</h2></header>
+  <div class="tablewrap">
+  <table>
+    <tr><th>Aufgabenwort</th><th>Das gehört in deine Antwort</th></tr>
+    <tr><td>Geben Sie an</td><td>Nur das Ergebnis, keine Herleitung nötig</td></tr>
+    <tr><td>Berechnen, Bestimmen, Ermitteln</td><td>Rechenweg und Ergebnis</td></tr>
+    <tr><td>Zeigen Sie, dass</td><td>Rechnung, die das Behauptete bestätigt. Das Ergebnis steht ja schon da.</td></tr>
+    <tr><td>Begründen Sie</td><td>Kurze Rechnung oder ein Argument in ganzen Sätzen</td></tr>
+    <tr><td>Untersuchen, Prüfen</td><td>Rechnung und ein Antwortsatz (ja / nein)</td></tr>
+    <tr><td>Ohne Rechnung</td><td>Nur mit Argument, zum Beispiel „senkrecht ist kürzeste Verbindung“</td></tr>
+  </table>
+  </div>
+  <details>
+    <summary>Schnellcheck vor der Abgabe</summary>
+    <p>Habe ich Verbindungsvektoren richtig gebildet (Ziel minus Start)? Steht bei „Untersuchen“ ein Antwortsatz da? Habe ich bei Abstandsaufgaben beide Punkte angegeben? Sind bei Strecken die Parametergrenzen geprüft?</p>
+  </details>
+</section>
+
+<!-- ============ Plan ============ -->
+<section class="card" id="plan">
+  <header><h2>Dein Plan für zwei Tage</h2></header>
+  <p class="sub">Häkchen bleiben auf diesem Gerät gespeichert.</p>
+  <h3>Tag 1</h3>
+  <div class="plan">
+    <label><input type="checkbox" data-k="p1a"> Grundwerkzeuge und Skalarprodukt, alle Beispiele nachrechnen</label>
+    <label><input type="checkbox" data-k="p1b"> Punktprobe und Lage von Geraden, je eine Aufgabe ohne Hinsehen</label>
+    <label><input type="checkbox" data-k="p1c"> Punkte mit Abstand, Dreiecke und Vierecke</label>
+    <label><input type="checkbox" data-k="p1e"> LGS und Gauß: die drei Beispiele von Hand lösen</label>
+    <label><input type="checkbox" data-k="p1d"> Pflichtaufgaben 2024 und 2025 komplett lösen</label>
+  </div>
+  <h3>Tag 2</h3>
+  <div class="plan">
+    <label><input type="checkbox" data-k="p2a"> Körper, Ebenen und Spiegeln</label>
+    <label><input type="checkbox" data-k="p2e"> Kreuzprodukt, Koordinatenform, Abstand Punkt–Ebene</label>
+    <label><input type="checkbox" data-k="p2b"> Schatten, Flugzeuge, Lot</label>
+    <label><input type="checkbox" data-k="p2c"> Wahlpflichtaufgaben 3 und 4 (2024 und 2025) ohne Lösung</label>
+    <label><input type="checkbox" data-k="p2d"> Einen Teil B (2023 bis 2025) mit der Modelllösung aus deinem PDF vergleichen</label>
+  </div>
+</section>
+
+</div>
+
+<button class="themebtn" id="theme" type="button">Hell / Dunkel</button>
+
+<script>
+(function(){
+  /* Vektoren aus "a|b|c" als Spalte darstellen */
+  document.querySelectorAll('.vec').forEach(function(el){
+    var parts = el.textContent.split('|');
+    if(parts.length<2) return;
+    el.setAttribute('aria-label','Vektor '+parts.join(', '));
+    el.textContent='';
+    parts.forEach(function(p){var i=document.createElement('i');i.textContent=p.trim();el.appendChild(i);});
+  });
+
+  /* Navigation */
+  var nav=document.getElementById('nav');
+  var cards=document.querySelectorAll('.card[data-title]');
+  var chips=[];
+  [['wegweiser','Wegweiser']].concat([].map.call(cards,function(c){return [c.id,c.dataset.title];})).concat([['plan','Plan']]).forEach(function(x){
+    var a=document.createElement('a');a.href='#'+x[0];a.textContent=x[1];a.dataset.id=x[0];nav.appendChild(a);chips.push(a);
+  });
+
+  /* Fortschritt speichern */
+  var store={};
+  function load(){try{var s=localStorage.getItem('lz-ag-v1');if(s)store=JSON.parse(s)||{};}catch(e){store={};}}
+  function save(){try{localStorage.setItem('lz-ag-v1',JSON.stringify(store));}catch(e){}}
+  load();
+
+  var total=cards.length;
+  document.getElementById('ptotal').textContent=total;
+  function render(){
+    var n=0;
+    cards.forEach(function(c){
+      var b=c.querySelector('.kann');
+      var on=!!store[c.id];
+      b.setAttribute('aria-pressed',on?'true':'false');
+      b.textContent=on?'Sitzt':'Kann ich';
+      if(on)n++;
+      chips.forEach(function(a){if(a.dataset.id===c.id)a.classList.toggle('done',on);});
+    });
+    document.getElementById('pcount').textContent=n;
+    document.getElementById('pbar').style.width=(total?n/total*100:0)+'%';
+  }
+  cards.forEach(function(c){
+    c.querySelector('.kann').addEventListener('click',function(){store[c.id]=!store[c.id];save();render();});
+  });
+  document.querySelectorAll('.plan input').forEach(function(cb){
+    cb.checked=!!store[cb.dataset.k];
+    cb.addEventListener('change',function(){store[cb.dataset.k]=cb.checked;save();});
+  });
+  render();
+
+  /* Theme */
+  document.getElementById('theme').addEventListener('click',function(){
+    var r=document.documentElement;
+    var dark=r.getAttribute('data-theme')==='dark' || (r.getAttribute('data-theme')!=='light' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+    r.setAttribute('data-theme',dark?'light':'dark');
+  });
+})();
+</script>
+</body>
+</html>
